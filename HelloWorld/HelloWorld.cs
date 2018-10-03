@@ -11,7 +11,7 @@ public class Program
         string adjective3 = "";
         string adjective4 = "";
         string adjective5 = "";
-        string adverb = "";
+        string verbEndingInIng = "";
         string number = "";
         string pluralNoun1 = "";
         string pluralNoun2 = "";
@@ -30,8 +30,8 @@ public class Program
         pluralNoun1 = Console.ReadLine();
         Console.WriteLine("Enter an adjective: ");
         adjective2 = Console.ReadLine();
-        Console.WriteLine("Enter an adverb: ");
-        adverb = Console.ReadLine();
+        Console.WriteLine("Enter an verb ending in ing: ");
+        verbEndingInIng = Console.ReadLine();
         Console.WriteLine("Enter a verb: ");
         verb2 = Console.ReadLine();
         Console.WriteLine("Enter a number: ");
@@ -53,6 +53,6 @@ public class Program
         Console.WriteLine("Enter a plural Noun: ");
         pluralNoun5 = Console.ReadLine();
 
-        Console.WriteLine("Come {0} at WALMART, where you`ll receive {1} discounts on all of your favorite brand name {2}. Our {3} and {4} associates are there to {5} you {6} hours a day. Here you will find {7} prices on the {8} you need. {9} for the moms, {10} for the kids and all the latest electronics for the {11}. So come on down to your {12} {13} WALMART where the {14} come first.", verb1, adjective1, pluralNoun1, adjective2, adverb, verb2, number, adjective3, pluralNoun2, pluralNoun3, pluralNoun4, relative, adjective4, adjective5, pluralNoun5);
+        Console.WriteLine("Come {0} at WALMART, where you`ll receive {1} discounts on all of your favorite brand name {2}. Our {3} and {4} associates are there to {5} you {6} hours a day. Here you will find {7} prices on the {8} you need. {9} for the moms, {10} for the kids and all the latest electronics for the {11}. So come on down to your {12} {13} WALMART where the {14} come first.", verb1, adjective1, pluralNoun1, adjective2, verbEndingInIng, verb2, number, adjective3, pluralNoun2, pluralNoun3, pluralNoun4, relative, adjective4, adjective5, pluralNoun5);
     }   
 }
