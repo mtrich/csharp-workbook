@@ -6,20 +6,57 @@ namespace RockPaperScissors
     {
         public static void Main()
         {
-            Console.WriteLine("Enter hand 1:");
+            //user input
+            Console.WriteLine("Enter your move:");
             string hand1 = Console.ReadLine().ToLower();
-            Console.WriteLine("Enter hand 2:");
-            string hand2 = Console.ReadLine().ToLower();
-            Console.WriteLine(CompareHands(hand1, hand2));
 
-            // leave this command at the end so your program does not close automatically
+            //random computer input
+            string hand2;
+            Random rnd = new Random();
+            int computerMove = rnd.Next(1,3);
+            
+            if (computerMove == 1){
+                hand2 = "rock";
+            }
+            else if (computerMove == 2){
+                hand2 = "paper";
+            }
+            else{
+                hand2 = "scissors";
+            }
+            Console.WriteLine("Computer chose " + hand2);
+
+            //logic to decide outcome
+            int wincon = CompareHands(hand1,hand2);
+
+            if(wincon == 0){
+                Console.WriteLine("it's a Tie!");
+            }
+            else if(wincon == 1){
+                Console.WriteLine("You Win!");
+            }
+            else{
+                Console.WriteLine("You Lose!");
+            }
+            
+            //prevents program from closing
             Console.ReadLine();
         }
-        
-        public static string CompareHands(string hand1, string hand2)
+
+        private static int CompareHands(string hand1, string hand2)
         {
-            // Your code here
-            return hand1 + ' ' + hand2;
-        }
+            //Tie condition
+            if(hand1 == hand2){
+                return 0;
+            }
+            //Win Condition
+            else if ((hand1 == "rock" && hand2 == "scissors")||(hand1 == "paper" && hand2 == "rock")||(hand1 == "scissors" && hand2 == "paper")){
+                return 1;
+            }
+            //Loss Condition
+            else{
+                return 2;
+            }
+        }      
     }
 }
