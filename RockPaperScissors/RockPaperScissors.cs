@@ -13,7 +13,7 @@ namespace RockPaperScissors
             //random computer input
             string hand2;
             Random rnd = new Random();
-            int computerMove = rnd.Next(1,3);
+            int computerMove = rnd.Next(1,4);
             
             if (computerMove == 1){
                 hand2 = "rock";
