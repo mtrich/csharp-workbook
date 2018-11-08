@@ -20,6 +20,7 @@ namespace Gradebook
 
     class Gradebook
     {
+
         public void run(){
             Gradebook.getUserInput(new Dictionary<string, List<int>>());
         }
@@ -41,9 +42,6 @@ namespace Gradebook
                 Console.WriteLine("Would you like to enter a new student?(Y/N)");
                 status = Console.ReadLine().ToLower();
             }
-            
-        }
-        private void writeGrades(Dictionary<string, List<int>> grades){
             //Writes each sudents Name, grade average, max grade, and min grade.
             foreach (var key in grades.Keys)
             {
