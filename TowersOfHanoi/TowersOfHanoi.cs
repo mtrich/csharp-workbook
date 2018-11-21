@@ -48,7 +48,7 @@ namespace TowersOfHanoi
                     Console.WriteLine("invalid move");
                 }
                 //seperates previous move from current move
-                Console.WriteLine("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
+                Console.Clear();
             }
             //prints final board
             PrintBoard();
