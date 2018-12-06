@@ -20,7 +20,7 @@ namespace Checkers
         public int[] Position  { get; set; }
         public string Color { get; set; }
         
-        //sets symbol for each side of checker
+        //sets symbol for each color of checker
         public Checker(string color, int[] position)
         {
             
@@ -80,6 +80,7 @@ namespace Checkers
             //array of checker positions
             int[,] whitePositions = {{0,5}, {2,5}, {4,5}, {6,5}, {1,6}, {3,6}, {5,6}, {7,6}, {0,7}, {2,7}, {4,7}, {6,7}};
             int[,] blackPositions = {{1,0}, {3,0}, {5,0}, {7,0}, {0,1}, {2,1}, {4,1}, {6,1}, {1,2}, {3,2}, {5,2}, {7,2}};
+            
 
             //creates new list of checkers
             Checkers = new List<Checker>();
@@ -153,12 +154,14 @@ namespace Checkers
 
     class Game
     {
+        //instantiates new board
+        public Board board = new Board();
+        
         public Game()
         {
-            //instantiates new board
-            Board board = new Board();
             //of size 8 by 8
             board.Grid = new string[8,8];
+            
             //generates initial checkers
             board.GenerateCheckers();
             //draws initial board
@@ -176,12 +179,7 @@ namespace Checkers
                 int rowStart = Convert.ToInt16(Console.ReadLine());
 
                 //if input is not within bounds of board or selected grid square is empty let user know that no piece was selected
-                if ((columnStart > 7 || columnStart < 0 || rowStart > 7 || rowStart < 0) || board.Grid[columnStart,rowStart] == " ")
-                {
-                    Console.WriteLine("No piece selected");
-                }
-                //if a piece is properly selected
-                else
+                if (SelectablePiece(columnStart, rowStart))
                 {
                     //selected checker equals checker at user inputed position
                     Checker selectedChecker = board.SelectChecker(columnStart,rowStart);
@@ -193,78 +191,57 @@ namespace Checkers
                     //get input for drop off row and store as int rowTo
                     Console.WriteLine("Enter drop off Row:");
                     int rowTo = Convert.ToInt16(Console.ReadLine());
+                    bool movingLeft = MovingLeft(columnStart, columnTo);
                     
-                    //if selected checker is White
-                    if(selectedChecker.Color == "white")
+                    if(selectedChecker.Color == "white" && IsLegalWhite(columnStart, rowStart, columnTo, rowTo))
                     {
-                        if(//columnTo and rowTo is empty       and piece is not moving to same row and column
-                            (board.Grid[columnTo,rowTo] == " " && rowTo != rowStart && columnTo != columnStart)
-                            //and piece is moving right and is moving 1 right and 1 up                            or piece 1 up and 1 right from start is enemy   and piece is moving 2 right and two up
-                            && ((columnStart < columnTo && ((columnTo == columnStart+1 && rowTo == rowStart - 1) || (board.Grid[columnStart+1,rowStart-1] == "@" && columnTo == columnStart+2 && rowTo == rowStart - 2)))
-                            //or piece is moving left and is moving 1 left and 1 up                                or piece 1 up and 1 left from start is enemy    and piece is moving 2 left and two up
-                            || (columnStart > columnTo && ((columnTo == columnStart -1 && rowTo == rowStart - 1) || (board.Grid[columnStart-1,rowStart-1] == "@" && columnTo == columnStart-2 && rowTo == rowStart - 2)))))
+                        // if player moves left and spot to left and up one is enemy
+                        if(movingLeft && board.Grid[columnStart-1,rowStart-1] == "@")
                         {
-                            // if player moves left and spot to left and up one is enemy
-                            if(columnTo < columnStart && board.Grid[columnStart-1,rowStart-1] == "@")
-                            {
-                                //remove enemy that player has jumped
-                                board.RemoveChecker(columnStart-1,rowStart-1);
-                            }
-                            // if player moves right and spot to right and up one is enemy
-                            else if(columnTo > columnStart && board.Grid[columnStart+1,rowStart-1] == "@")
-                            {
-                                //remove enemy that player has jumped
-                                board.RemoveChecker(columnStart+1,rowStart-1);
-                            }
-                            //start grid position is now empty
-                            board.Grid[columnStart,rowStart] = " ";
-                            //To grid positon = selected checkers symbol
-                            board.Grid[columnTo,rowTo] = selectedChecker.Symbol;
-                            //changes selected checkers position to new position
-                            selectedChecker.Position[0] = columnTo;
-                            selectedChecker.Position[1] = rowTo;
+                            //remove enemy that player has jumped
+                            board.RemoveChecker(columnStart-1,rowStart-1);
                         }
-                        //if move is not valid let user know
-                        else
+                        // if player moves right and spot to right and up one is enemy
+                        else if(!movingLeft && board.Grid[columnStart+1,rowStart-1] == "@")
                         {
-                            Console.WriteLine("invalid move");
+                            //remove enemy that player has jumped
+                            board.RemoveChecker(columnStart+1,rowStart-1);
                         }
+                        //start grid position is now empty
+                        board.Grid[columnStart,rowStart] = " ";
+                        //To grid positon = selected checkers symbol
+                        board.Grid[columnTo,rowTo] = selectedChecker.Symbol;
+                        //changes selected checkers position to new position
+                        selectedChecker.Position[0] = columnTo;
+                        selectedChecker.Position[1] = rowTo;
                     }
                     //if selected checker is black
-                    else if(selectedChecker.Color == "black")
+                    else if(selectedChecker.Color == "black" && IsLegalBlack(columnStart, rowStart, columnTo, rowTo))
                     {
-                        if(//columnTo and rowTo is empty       and piece is not moving to same row and column
-                            (board.Grid[columnTo,rowTo] == " " && rowTo != rowStart && columnTo != columnStart)
-                            //and piece is moving right and is moving 1 right and 1 down                          or piece 1 down and 1 right from start is enemy and piece is moving 2 right and two down
-                            && ((columnStart < columnTo && ((columnTo == columnStart+1 && rowTo == rowStart + 1) || (board.Grid[columnStart+1,rowStart+1] == "O" && columnTo == columnStart+2 && rowTo == rowStart + 2)))
-                            //or piece is moving left and is moving 1 left and 1 down                             or piece 1 down and 1 left from start is enemy and piece is moving 2 left and two down
-                            || (columnStart > columnTo && ((columnTo == columnStart -1 && rowTo == rowStart + 1))|| (board.Grid[columnStart-1,rowStart+1] == "O" && columnTo == columnStart-2 && rowTo == rowStart + 2))))
+                        // if player moves left and spot to left and down one is enemy
+                        if(movingLeft && board.Grid[columnStart-1,rowStart+1] == "O")
                         {
-                            // if player moves left and spot to left and down one is enemy
-                            if(columnTo < columnStart && board.Grid[columnStart-1,rowStart+1] == "O")
-                            {
-                                //remove enemy that player has jumped
-                                board.RemoveChecker(columnStart-1,rowStart+1);
-                            }
-                            // if player moves right and spot to right and down one is enemy
-                            else if(columnTo > columnStart && board.Grid[columnStart+1,rowStart+1] == "O")
-                            {
-                                //remove enemy that player has jumped
-                                board.RemoveChecker(columnStart+1,rowStart+1);
-                            }
-                                //start grid position is now empty
-                                board.Grid[columnStart,rowStart] = " ";
-                                //To grid positon = selected checkers symbol
-                                board.Grid[columnTo,rowTo] = selectedChecker.Symbol;
-                                //changes selected checkers position to new position
-                                selectedChecker.Position[0] = columnTo;
-                                selectedChecker.Position[1] = rowTo;
+                            //remove enemy that player has jumped
+                            board.RemoveChecker(columnStart-1,rowStart+1);
                         }
-                        //if move is not valid let user know
-                        else
+                        // if player moves right and spot one right and one down is enemy
+                        else if(!movingLeft && board.Grid[columnStart+1,rowStart+1] == "O")
                         {
-                            Console.WriteLine("invalid move");
+                            //remove enemy that player has jumped
+                            board.RemoveChecker(columnStart+1,rowStart+1);
                         }
+                        //start grid position is now empty
+                        board.Grid[columnStart,rowStart] = " ";
+                        //To grid positon = selected checkers symbol
+                        board.Grid[columnTo,rowTo] = selectedChecker.Symbol;
+                        //changes selected checkers position to new position
+                        selectedChecker.Position[0] = columnTo;
+                        selectedChecker.Position[1] = rowTo;
+                    }
+                    //if move is not valid let user know
+                    else
+                    {
+                        Console.WriteLine("invalid move");
                     }
                 }
                 //draws new board before loop repeats or ends
@@ -280,6 +257,64 @@ namespace Checkers
             {
                 Console.WriteLine("Black wins!");
             }
+        }
+
+        //method checks if user chooses a selectable piece 
+        public bool SelectablePiece(int columnStart, int rowStart)
+        {
+            //piece is outside of bounds of board or selected grid square does not have a piece
+            if ((columnStart > 7 || columnStart < 0 || rowStart > 7 || rowStart < 0) || board.Grid[columnStart,rowStart] == " ")
+                {
+                    //let user know no piece was selected and return false
+                    Console.WriteLine("No piece selected");
+                    return false;
+                }
+            else
+            {
+                return true;
+            }
+        }
+        //if selected piece is white check if move is legal
+        public bool IsLegalWhite(int columnStart, int rowStart,int columnTo, int rowTo)
+        {
+            //checks if piece is moving left
+            bool movingLeft = MovingLeft(columnStart, columnTo);
+            if(//columnTo and rowTo is empty       and piece is not moving to same row and column
+                (board.Grid[columnTo,rowTo] == " " && rowTo != rowStart && columnTo != columnStart)
+                //and piece is moving right and is moving 1 right and 1 up                 or piece 1 up and 1 right from start is enemy  and piece is moving 2 right and two up
+                && ((!movingLeft && ((columnTo == columnStart+1 && rowTo == rowStart - 1) || (board.Grid[columnStart+1,rowStart-1] == "@" && columnTo == columnStart+2 && rowTo == rowStart - 2)))
+                //or piece is moving left and is moving 1 left and 1 up                   or piece 1 up and 1 left from start is enemy    and piece is moving 2 left and two up
+                || (movingLeft && ((columnTo == columnStart -1 && rowTo == rowStart - 1) || (board.Grid[columnStart-1,rowStart-1] == "@" && columnTo == columnStart-2 && rowTo == rowStart - 2)))))
+            {
+                return true;
+            } else return false;
+        }
+        //if selected piece is black check if move is legal
+        public bool IsLegalBlack(int columnStart, int rowStart,int columnTo, int rowTo)
+        {
+            bool movingLeft = MovingLeft(columnStart, columnTo);
+            if(//columnTo and rowTo is empty       and piece is not moving to same row and column
+                (board.Grid[columnTo,rowTo] == " " && rowTo != rowStart && columnTo != columnStart)
+                //and piece is moving right and is moving 1 right and 1 down              or piece 1 down and 1 right from start is enemy   and piece is moving 2 right and two down
+                && ((!movingLeft && ((columnTo == columnStart+1 && rowTo == rowStart + 1) || (board.Grid[columnStart+1,rowStart+1] == "O" && columnTo == columnStart+2 && rowTo == rowStart + 2)))
+                //or piece is moving left and is moving 1 left and 1 down                or piece 1 down and 1 left from start is enemy    and piece is moving 2 left and two down
+                || (movingLeft && ((columnTo == columnStart -1 && rowTo == rowStart + 1) || (board.Grid[columnStart-1,rowStart+1] == "O" && columnTo == columnStart-2 && rowTo == rowStart + 2)))))
+            {
+                return true;
+            } else return false;
+        }
+        //checks if piece is moving left so that if a piece is on the side of the board there isn't an out of bounds exception if logic checks beyond the board
+        public bool MovingLeft(int columnStart,int columnTo)
+        {
+            //if moving to greater column return true
+            if(columnStart > columnTo)
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            } 
         }
     }
 }
